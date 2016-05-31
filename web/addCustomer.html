@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title> Add Customer </title>
+    </head>
+    <body>
+        <H1> Add a new customer profile </H1>
+        <p>
+        <form action="addCustomer.do" method="POST">
+            Customer ID : <input name="id" /> <br>
+            Name: <input name="name" /> <br>
+            Address: <textarea name="addr" rows="4" cols="20"></textarea> <br>
+            Mobile: <input name="mobile" size="9" /> <br>
+            Fax: <input name="fax" size="9" /> <br>
+            E-mail: <input name="email" size="25" /> <br><br>
+            <input type="submit" value="Add" />
+        </form>
+    </body>
+</html>
