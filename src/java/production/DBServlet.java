@@ -56,6 +56,7 @@ public class DBServlet extends HttpServlet {
             MongoDatabase db = mongoClient.getDatabase(DBName);
             MongoCollection<Document> coll = db.getCollection(CollName);
             
+            
             String json = request.getParameter("q");
             
             if(operation.equalsIgnoreCase("get")){
