@@ -81,6 +81,7 @@ public class DBServlet extends HttpServlet {
                 
                 coll.deleteMany(Document.parse(json));
                 
+                
             } else if(operation.equalsIgnoreCase("update")){
                 
                 String json2 = request.getParameter("q2");
