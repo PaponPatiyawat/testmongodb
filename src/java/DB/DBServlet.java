@@ -6,6 +6,7 @@
 package DB;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,13 +48,17 @@ public class DBServlet extends HttpServlet {
             String path = request.getPathInfo();
             path = path.substring(1,path.length());
             
+            String ID = path.substring(0,path.indexOf("/"));
+            path = path.substring(path.indexOf("/")+1,path.length());
             
             String operation = path.substring(0,path.indexOf("/"));
-            String DBName = path.substring(path.indexOf("/")+1,path.lastIndexOf("/"));
-            String CollName = path.substring(path.lastIndexOf("/")+1,path.length());
+            path = path.substring(path.indexOf("/")+1,path.length());
+            
+            String DBName = path.substring(0,path.indexOf("/"));
+            String CollName = path.substring(path.indexOf("/")+1,path.length());
 
             
-            MongoClient mongoClient = new MongoClient();
+            MongoClient mongoClient = new MongoClient("10.42.0.1",27017);
             MongoDatabase db = mongoClient.getDatabase(DBName);
             MongoCollection<Document> coll = db.getCollection(CollName);
             
@@ -68,10 +74,10 @@ public class DBServlet extends HttpServlet {
                     String[]  values = (String[])entry.getValue();
                     list.add(Document.parse(values[0]));
                 }
+                AggregateIterable<Document> agg = coll.aggregate(list);
                 
-                for(Document doc : coll.aggregate(list)){
-                    out.println(doc.toJson() + "<BR>" + "<BR>");
-                }
+                PrintTable(out,agg);
+                
             
             } else if(operation.equalsIgnoreCase("set")){
                 
@@ -92,6 +98,24 @@ public class DBServlet extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
         }
+    }
+    
+    private static void PrintTable(PrintWriter out,AggregateIterable<Document> agg){
+        out.println("<table BORDER=1 CELLPADDING=0 CELLSPACING=0 WIDTH=50% >");
+                
+        Set<String> setkey = agg.iterator().next().keySet();
+                
+        out.println("<tr>");
+        for(String key : setkey) out.print("<td>"+key+ "</td>");
+        out.println("</tr>");
+                
+        for(Document doc : agg){
+            out.println("<tr>");
+            for(String key : setkey) out.print("<td>"+doc.get(key)+ "</td>");
+            out.println("</tr>");
+        }
+                
+        out.println("</table>");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
