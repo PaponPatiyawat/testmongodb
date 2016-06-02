@@ -7,6 +7,7 @@ package DB;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.PrintWriter;
@@ -44,7 +45,6 @@ public class DBConnect {
                 
             PrintTable(out,agg);
                 
-            
         } else if(operation.equalsIgnoreCase("set")){
                 
             coll.insertOne(Document.parse(json));
@@ -52,8 +52,7 @@ public class DBConnect {
         } else if(operation.equalsIgnoreCase("remove")){
                 
             coll.deleteMany(Document.parse(json));
-                
-                
+                   
         } else if(operation.equalsIgnoreCase("update")){
                 
             String json2 = request.getParameter("q2");
@@ -72,6 +71,24 @@ public class DBConnect {
         out.println("</tr>");
                 
         for(Document doc : agg){
+            out.println("<tr>");
+            for(String key : setkey) out.print("<td>"+doc.get(key)+ "</td>");
+            out.println("</tr>");
+        }
+                
+        out.println("</table>");
+    }
+    
+    static void PrintTable(PrintWriter out,FindIterable<Document> find){
+        out.println("<table BORDER=1 CELLPADDING=0 CELLSPACING=0 WIDTH=50% >");
+                
+        Set<String> setkey = find.iterator().next().keySet();
+                
+        out.println("<tr>");
+        for(String key : setkey) out.print("<td>"+key+ "</td>");
+        out.println("</tr>");
+                
+        for(Document doc : find){
             out.println("<tr>");
             for(String key : setkey) out.print("<td>"+doc.get(key)+ "</td>");
             out.println("</tr>");

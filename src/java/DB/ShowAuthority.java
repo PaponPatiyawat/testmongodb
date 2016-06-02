@@ -5,24 +5,37 @@
  */
 package DB;
 
-
+import static DB.DBConnect.PrintTable;
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.bson.Document;
 
-@WebServlet(name = "DBServlet", urlPatterns = "/*")
-public class DBServlet extends HttpServlet {
+/**
+ *
+ * @author delta
+ */
+@WebServlet(name = "ShowAuthority", urlPatterns = {"/ShowAuthority"})
+public class ShowAuthority extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -31,36 +44,28 @@ public class DBServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DBServlet</title>");            
+            out.println("<title>Servlet ShowAuthority</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DBServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ShowAuthority at " + request.getContextPath() + "</h1>");
             
+            MongoClient mongoClient = new MongoClient("localhost",27017);
+            MongoDatabase db = mongoClient.getDatabase("test");
+            MongoCollection<Document> coll = db.getCollection("authority");
             
-            String path = request.getPathInfo();
-            path = path.substring(1,path.length());
+            String AddString = request.getParameter("add");
+            if(AddString != null) coll.insertOne(Document.parse(AddString));
             
-            String UserID = path.substring(0,path.indexOf("/"));
-            path = path.substring(path.indexOf("/")+1,path.length());
+            String RemoveString = request.getParameter("remove");
+            if(AddString != null) coll.deleteMany(Document.parse(RemoveString));
             
-            String operation = path.substring(0,path.indexOf("/"));
-            path = path.substring(path.indexOf("/")+1,path.length());
+            FindIterable<Document> find = coll.find();
+            PrintTable(out,find);
             
-            String DBName = path.substring(0,path.indexOf("/"));
-            String CollName = path.substring(path.indexOf("/")+1,path.length());
-            
-            boolean hasAuthority = DBAuthority.Authority(UserID, DBName, CollName);
-
-            if(hasAuthority||UserID.equalsIgnoreCase("0")) DBConnect.Connect(request,out,operation,DBName,CollName);
-            else  out.println("no authority");
-            
-
             out.println("</body>");
             out.println("</html>");
         }
     }
-    
-    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
