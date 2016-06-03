@@ -47,7 +47,6 @@ public class ShowAuthority extends HttpServlet {
             out.println("<title>Servlet ShowAuthority</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ShowAuthority at " + request.getContextPath() + "</h1>");
             
             MongoClient mongoClient = new MongoClient("localhost",27017);
             MongoDatabase db = mongoClient.getDatabase("test");

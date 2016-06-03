@@ -63,18 +63,7 @@ public class DBConnect {
         out.println("</table>");
     }
     
-    static void PrintJson(PrintWriter out,AggregateIterable<Document> agg){
-        out.println("<table BORDER=1 CELLPADDING=0 CELLSPACING=0 WIDTH=50% >");
-                
-        Set<String> setkey = agg.iterator().next().keySet();
-                
-                
-        for(Document doc : agg){
-            out.println(doc.toJson()+"<br/>");
-        }
-                
-        out.println("</table>");
-    }
+    
     
     static void PrintTable(PrintWriter out,FindIterable<Document> find){
         out.println("<table BORDER=1 CELLPADDING=0 CELLSPACING=0 WIDTH=50% >");
@@ -106,4 +95,16 @@ public class DBConnect {
         if(Update1String != null && Update2String != null) coll.updateMany(Document.parse(Update1String),Document.parse(Update2String));
     }
     
+    
+    static void PrintJson(PrintWriter out,AggregateIterable<Document> agg){
+                
+        Set<String> setkey = agg.iterator().next().keySet();
+        
+                
+        for(Document doc : agg){
+            
+            out.println(doc.toJson()+"<br/>");
+        }
+
+    }
 }

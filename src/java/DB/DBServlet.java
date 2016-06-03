@@ -34,7 +34,6 @@ public class DBServlet extends HttpServlet {
             out.println("<title>Servlet DBServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DBServlet at " + request.getContextPath() + "</h1>");
             
             
             String path = request.getPathInfo();
@@ -59,6 +58,7 @@ public class DBServlet extends HttpServlet {
             out.println("</html>");
         }
     }
+    
     
     
 
