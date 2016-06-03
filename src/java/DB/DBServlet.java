@@ -51,7 +51,7 @@ public class DBServlet extends HttpServlet {
             
             boolean hasAuthority = DBAuthority.Authority(UserID, DBName, CollName);
 
-            if(hasAuthority||UserID.equalsIgnoreCase("0")) DBConnect.Connect(request,out,operation,DBName,CollName);
+            if(UserID.equalsIgnoreCase("0")||hasAuthority) DBConnect.Connect(request,out,operation,DBName,CollName);
             else  out.println("no authority");
             
 
