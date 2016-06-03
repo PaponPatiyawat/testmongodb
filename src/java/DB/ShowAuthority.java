@@ -6,13 +6,13 @@
 package DB;
 
 import static DB.DBConnect.PrintTable;
+import static DB.DBConnect.setDB;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -53,11 +53,7 @@ public class ShowAuthority extends HttpServlet {
             MongoDatabase db = mongoClient.getDatabase("test");
             MongoCollection<Document> coll = db.getCollection("authority");
             
-            String AddString = request.getParameter("add");
-            if(AddString != null) coll.insertOne(Document.parse(AddString));
-            
-            String RemoveString = request.getParameter("remove");
-            if(AddString != null) coll.deleteMany(Document.parse(RemoveString));
+            setDB(request,coll);
             
             FindIterable<Document> find = coll.find();
             PrintTable(out,find);

@@ -28,37 +28,21 @@ public class DBConnect {
         MongoClient mongoClient = new MongoClient("10.42.0.1",27017);
         MongoDatabase db = mongoClient.getDatabase(DBName);
         MongoCollection<Document> coll = db.getCollection(CollName);
-            
-            
-        String json = request.getParameter("q");
-            
-        if(operation.equalsIgnoreCase("get")){
+        
+        setDB(request,coll);
+                       
+        List<Document> list = new ArrayList<>();
                 
-            List<Document> list = new ArrayList<>();
-                
-            Map<String,String[]> map = request.getParameterMap();
-            for (Map.Entry entry : map.entrySet()) {
-                String[]  values = (String[])entry.getValue();
-                list.add(Document.parse(values[0]));
-            }
-            AggregateIterable<Document> agg = coll.aggregate(list);
-                
-            PrintTable(out,agg);
-                
-        } else if(operation.equalsIgnoreCase("set")){
-                
-            coll.insertOne(Document.parse(json));
-                
-        } else if(operation.equalsIgnoreCase("remove")){
-                
-            coll.deleteMany(Document.parse(json));
-                   
-        } else if(operation.equalsIgnoreCase("update")){
-                
-            String json2 = request.getParameter("q2");
-            coll.updateMany(Document.parse(json),Document.parse(json2));
-                    
+        Map<String,String[]> map = request.getParameterMap();
+        for (Map.Entry entry : map.entrySet()) {
+            String[]  values = (String[])entry.getValue();
+            list.add(Document.parse(values[0]));
         }
+        AggregateIterable<Document> agg = coll.aggregate(list);
+                
+        PrintTable(out,agg);
+        //PrintJson(out,agg);
+
     }
     
     static void PrintTable(PrintWriter out,AggregateIterable<Document> agg){
@@ -74,6 +58,19 @@ public class DBConnect {
             out.println("<tr>");
             for(String key : setkey) out.print("<td>"+doc.get(key)+ "</td>");
             out.println("</tr>");
+        }
+                
+        out.println("</table>");
+    }
+    
+    static void PrintJson(PrintWriter out,AggregateIterable<Document> agg){
+        out.println("<table BORDER=1 CELLPADDING=0 CELLSPACING=0 WIDTH=50% >");
+                
+        Set<String> setkey = agg.iterator().next().keySet();
+                
+                
+        for(Document doc : agg){
+            out.println(doc.toJson()+"<br/>");
         }
                 
         out.println("</table>");
@@ -95,6 +92,18 @@ public class DBConnect {
         }
                 
         out.println("</table>");
+    }
+    
+    static void setDB(HttpServletRequest request,MongoCollection<Document> coll){
+        String AddString = request.getParameter("add");
+        if(AddString != null) coll.insertOne(Document.parse(AddString));
+        
+        String RemoveString = request.getParameter("remove");
+        if(RemoveString != null) coll.deleteMany(Document.parse(RemoveString));
+        
+        String Update1String = request.getParameter("update1");
+        String Update2String = request.getParameter("update2");
+        if(Update1String != null && Update2String != null) coll.updateMany(Document.parse(Update1String),Document.parse(Update2String));
     }
     
 }
